@@ -9,27 +9,35 @@
  */
 'use strict';
 
-import React, {PropTypes} from 'react';
-import {StyleSheet, View, NativeModules, requireNativeComponent} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, View, NativeModules, requireNativeComponent } from 'react-native';
+import PropTypes from 'prop-types';
 
-var RNMultiPickerConsts = NativeModules.UIManager.RNMultiPicker.Constants;
-var PICKER_REF = 'picker';
+const RNMultiPickerConsts = NativeModules.UIManager.RNMultiPicker.Constants;
+const PICKER_REF = 'picker';
 
-var MultiPickerIOS = React.createClass({
-  propTypes: {
+const styles = StyleSheet.create({
+  multipicker: {
+    height: RNMultiPickerConsts.ComponentHeight,
+  },
+});
+
+export default class MultiPickerIOS extends Component {
+  static propTypes = {
     componentData: PropTypes.any,
     selectedIndexes: PropTypes.array,
     onChange: PropTypes.func,
-  },
+  };
 
-  getInitialState() {
-    var componentData = [];
-    var selectedIndexes = [];
+  constructor(props) {
+    super(props);
+    let componentData = [];
+    let selectedIndexes = [];
 
     React.Children.forEach(this.props.children, (child, index) => {
-      var items = []
+      let items = [];
 
-      var selectedIndex = 0;
+      let selectedIndex = 0;
       if (child.props.selectedIndex) {
         selectedIndex = child.props.selectedIndex;
       } else if (child.props.initialSelectedIndex && !this.state) {
@@ -37,18 +45,18 @@ var MultiPickerIOS = React.createClass({
       }
 
       React.Children.forEach(child.props.children, function (child, idx) {
-        items.push({label: child.props.label, value: child.props.value});
+        items.push({ label: child.props.label, value: child.props.value });
       });
 
       componentData.push(items);
       selectedIndexes.push(selectedIndex);
     });
 
-    return {componentData, selectedIndexes,};
-  },
+    this.state = { componentData, selectedIndexes, };
+  }
 
   _onChange(event) {
-    var nativeEvent = event.nativeEvent;
+    const nativeEvent = event.nativeEvent;
 
     // Call any change handlers on the component itself
     if (this.props.onChange) {
@@ -69,13 +77,13 @@ var MultiPickerIOS = React.createClass({
       }
     });
 
-    var nativeProps = {
+    let nativeProps = {
       componentData: this.state.componentData,
     };
 
     nativeProps.selectedIndexes = this.state.selectedIndexes;
     this.refs[PICKER_REF].setNativeProps(nativeProps);
-  },
+  }
 
   render() {
     return (
@@ -88,41 +96,34 @@ var MultiPickerIOS = React.createClass({
           onChange={this._onChange}/>
       </View>
     );
-  },
-});
+  }
+}
 
 // Represents a "section" of a picker.
-MultiPickerIOS.Group = React.createClass({
-  propTypes: {
+export class Group extends Component {
+  static propTypes = {
     items: React.PropTypes.array,
     selectedIndex: React.PropTypes.number,
     onChange: React.PropTypes.func,
-  },
+  };
 
   render() {
     return null;
-  },
-});
+  }
+}
 
 // Represents an item in a picker section: the `value` is used for setting /
 // getting selection
 //
-MultiPickerIOS.Item = React.createClass({
-  propTypes: {
-    value: React.PropTypes.any.isRequired, // string or integer basically
-    label: React.PropTypes.string.isRequired, // for display
-  },
+export class Item extends Component {
+  static propTypes = {
+    value: PropTypes.any.isRequired, // string or integer basically
+    label: PropTypes.string.isRequired, // for display
+  };
 
   render() {
     return null;
-  },
-});
+  }
+}
 
-var styles = StyleSheet.create({
-  multipicker: {
-    height: RNMultiPickerConsts.ComponentHeight,
-  },
-});
-
-var RNMultiPicker = requireNativeComponent('RNMultiPicker', MultiPickerIOS);
-module.exports = MultiPickerIOS;
+const RNMultiPicker = requireNativeComponent('RNMultiPicker', MultiPickerIOS);
