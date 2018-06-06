@@ -105,9 +105,9 @@ export class MultiPickerIOS extends React.Component {
 
 export class Group extends React.Component {
   static propTypes = {
-    items: React.PropTypes.array,
-    selectedIndex: React.PropTypes.number,
-    onChange: React.PropTypes.func,
+    items: PropTypes.array,
+    selectedIndex: PropTypes.number,
+    onChange: PropTypes.func,
   };
 
   render() {
