@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export class MultiPickerIOS extends React.Component {
+export default class MultiPickerIOS extends React.Component {
   static propTypes = {
     componentData: PropTypes.any,
     selectedIndexes: PropTypes.array,
