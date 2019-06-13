@@ -7,27 +7,33 @@
  * @providesModule MultiPickerIOS
  *
  */
-'use strict';
+"use strict";
 
-import React from 'react';
-import { StyleSheet, View, NativeModules, requireNativeComponent } from 'react-native';
-import PropTypes from 'prop-types';
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  requireNativeComponent,
+  UIManager
+} from "react-native";
+import PropTypes from "prop-types";
 
-const RNMultiPicker = requireNativeComponent('RNMultiPicker', MultiPickerIOS);
-const RNMultiPickerConsts = NativeModules.UIManager.RNMultiPicker.Constants;
-const PICKER_REF = 'picker';
+const RNMultiPicker = requireNativeComponent("RNMultiPicker", MultiPickerIOS);
+const RNMultiPickerConsts = UIManager.getViewManagerConfig("RNMultiPicker")
+  .Constants;
+const PICKER_REF = "picker";
 
 const styles = StyleSheet.create({
   multipicker: {
-    height: RNMultiPickerConsts.ComponentHeight,
-  },
+    height: RNMultiPickerConsts.ComponentHeight
+  }
 });
 
 export default class MultiPickerIOS extends React.Component {
   static propTypes = {
     componentData: PropTypes.any,
     selectedIndexes: PropTypes.array,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func
   };
 
   constructor(props) {
@@ -48,7 +54,7 @@ export default class MultiPickerIOS extends React.Component {
         selectedIndex = 0;
       }
 
-      React.Children.forEach(child.props.children, function (child, idx) {
+      React.Children.forEach(child.props.children, function(child, idx) {
         items.push({ label: child.props.label, value: child.props.value });
       });
 
@@ -56,7 +62,7 @@ export default class MultiPickerIOS extends React.Component {
       selectedIndexes.push(selectedIndex);
     });
 
-    this.state = { componentData, selectedIndexes, };
+    this.state = { componentData, selectedIndexes };
 
     this.onChange = this.onChange.bind(this);
   }
@@ -75,14 +81,14 @@ export default class MultiPickerIOS extends React.Component {
     // if it has one. Doing it this way rather than storing references
     // to child nodes and their onChage props in _stateFromProps because
     // React docs imply that may not be a good idea.
-    React.Children.forEach(this.props.children, function (child, idx) {
+    React.Children.forEach(this.props.children, function(child, idx) {
       if (idx === nativeEvent.component && child.props.onChange) {
         child.props.onChange(nativeEvent);
       }
     });
 
     const nativeProps = {
-      componentData: this.state.componentData,
+      componentData: this.state.componentData
     };
 
     nativeProps.selectedIndexes = this.state.selectedIndexes;
@@ -97,7 +103,8 @@ export default class MultiPickerIOS extends React.Component {
           style={styles.multipicker}
           selectedIndexes={this.state.selectedIndexes}
           componentData={this.state.componentData}
-          onChange={this.onChange}/>
+          onChange={this.onChange}
+        />
       </View>
     );
   }
@@ -107,7 +114,7 @@ export class Group extends React.Component {
   static propTypes = {
     items: PropTypes.array,
     selectedIndex: PropTypes.number,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func
   };
 
   render() {
@@ -115,14 +122,12 @@ export class Group extends React.Component {
   }
 }
 
-
-
 // Represents an item in a picker section: the `value` is used for setting /
 // getting selection
 export class Item extends React.Component {
   static propTypes = {
     value: PropTypes.any.isRequired, // string or integer basically
-    label: PropTypes.string.isRequired, // for display
+    label: PropTypes.string.isRequired // for display
   };
 
   render() {
