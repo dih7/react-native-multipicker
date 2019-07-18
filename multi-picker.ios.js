@@ -67,6 +67,42 @@ export default class MultiPickerIOS extends React.Component {
     this.onChange = this.onChange.bind(this);
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if (props.children) {
+      const componentData = [];
+      const selectedIndexes = [];
+
+      React.Children.forEach(props.children, child => {
+        const items = [];
+
+        let selectedIndex;
+        if (child.props.selectedIndex) {
+          selectedIndex = child.props.selectedIndex;
+        } else if (child.props.initialSelectedIndex && !state) {
+          selectedIndex = child.props.initialSelectedIndex;
+        } else {
+          selectedIndex = 0;
+        }
+
+        React.Children.forEach(child.props.children, innerChild => {
+          items.push({
+            label: innerChild.props.label,
+            value: innerChild.props.value
+          });
+        });
+
+        componentData.push(items);
+        selectedIndexes.push(selectedIndex);
+      });
+
+      state = { componentData, selectedIndexes };
+
+      return state;
+    } else {
+      return state;
+    }
+  }
+
   onChange({ nativeEvent }) {
     // Call any change handlers on the component itself
     if (this.props.onChange) {
